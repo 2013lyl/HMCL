@@ -24,14 +24,19 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import org.jackhuang.hmcl.task.FetchTask;
 import org.jackhuang.hmcl.task.TaskExecutor;
 import org.jackhuang.hmcl.task.TaskListener;
 import org.jackhuang.hmcl.ui.FXUtils;
+import org.jackhuang.hmcl.ui.SVG;
+import org.jackhuang.hmcl.ui.SVGContainer;
 import org.jackhuang.hmcl.util.TaskCancellationAction;
 import org.jackhuang.hmcl.util.i18n.I18n;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
 import java.util.function.Consumer;
 
 import static org.jackhuang.hmcl.ui.FXUtils.onEscPressed;
@@ -48,6 +53,12 @@ public class TaskExecutorDialogPane extends BorderPane {
     private final Label lblProgress;
     private final JFXButton btnCancel;
     private final TaskListPane taskListPane;
+
+    private static final String[] TIP_KEYS = {
+            "tip.drag_modpack",
+            "tip.multi_game_dir",
+            "tip.version_isolation"
+    };
 
     public TaskExecutorDialogPane(@NotNull TaskCancellationAction cancel) {
         this.getStyleClass().add("task-executor-dialog-layout");
@@ -97,6 +108,24 @@ public class TaskExecutorDialogPane extends BorderPane {
         });
 
         onEscPressed(this, btnCancel::fire);
+
+        HBox tipBox = new HBox(8);
+        tipBox.setAlignment(Pos.CENTER_LEFT);
+        tipBox.setPadding(new Insets(8, 16, 8, 16));
+
+        SVGContainer tipIcon = new SVGContainer(SVG.LIGHTBULB, 18);
+
+        TextFlow tipText = new TextFlow();
+        Text text = new Text(i18n(TIP_KEYS[new Random().nextInt(TIP_KEYS.length)]));
+        text.setStyle("-fx-font-size: 12px; -fx-fill: -monet-on-surface-variant");
+        tipText.getChildren().add(text);
+        tipText.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(tipText, Priority.ALWAYS);
+
+        tipBox.getChildren().add(tipIcon);
+        tipBox.getChildren().add(tipText);
+
+        center.getChildren().add(tipBox);
     }
 
     public void setExecutor(TaskExecutor executor) {
